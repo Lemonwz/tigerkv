@@ -66,6 +66,10 @@ enum MessageType {
     // 'MessageType_MsgTimeoutNow' send from the leader to the leadership transfer target, to let
     // the transfer target timeout immediately and start a new election.
     MsgTimeoutNow = 12;
+    // 'MessageType_MsgAppendRelay' contains log entries to replicate from leader to relay.
+    MsgAppendRelay = 13;
+    // 'MessageType_MsgAppendRelayResponse' is response to log replication request('MessageType_MsgAppendRelay').
+    MsgAppendRelayResponse = 14;
 }
 
 message Message {
