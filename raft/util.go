@@ -45,6 +45,10 @@ func IsEmptyHardState(st pb.HardState) bool {
 	return isHardStateEqual(st, pb.HardState{})
 }
 
+func IsEmptyConfState(st pb.ConfState) bool {
+	return isConfStateEqual(st, pb.ConfState{})
+}
+
 // IsEmptySnap returns true if the given Snapshot is empty.
 func IsEmptySnap(sp *pb.Snapshot) bool {
 	if sp == nil || sp.Metadata == nil {
@@ -67,6 +71,18 @@ func nodes(r *Raft) []uint64 {
 	}
 	sort.Sort(uint64Slice(nodes))
 	return nodes
+}
+
+func peerGroups(r* Raft) [][]uint64 {
+	peerGroups := make([][]uint64, 0, r.peerGroupNum)
+	for id := range r.Prs {
+		pgIdx := id % r.peerGroupNum
+		peerGroups[pgIdx] = append(peerGroups[pgIdx], id);
+	}
+	for _, pg := range peerGroups {
+		sort.Sort(uint64Slice(pg))
+	}
+	return peerGroups
 }
 
 func diffu(a, b string) string {
@@ -126,4 +142,24 @@ func IsResponseMsg(msgt pb.MessageType) bool {
 
 func isHardStateEqual(a, b pb.HardState) bool {
 	return a.Term == b.Term && a.Vote == b.Vote && a.Commit == b.Commit
+}
+
+func isConfStateEqual(a, b pb.ConfState) bool {
+	return compareUint64Slice(a.Nodes, b.Nodes) && a.PeerGroupNum == b.PeerGroupNum
+}
+
+func compareUint64Slice(a, b []uint64) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	// []int{} not equal to []int{nil}
+	if (a == nil) != (b == nil) {
+		return false;
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
 }

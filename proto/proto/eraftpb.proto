@@ -83,6 +83,8 @@ message Message {
     uint64 commit = 8;
     Snapshot snapshot = 9;
     bool reject = 10;
+    uint64 hint_index = 11;
+    uint64 hint_term = 12;
 }
 
 // HardState contains the state of a node need to be peristed, including the current term, commit index 
@@ -97,6 +99,8 @@ message HardState {
 message ConfState {
     // all node id
     repeated uint64 nodes = 1;
+    // peer group number
+    uint64 peer_group_num = 2;
 }
 
 enum ConfChangeType {
